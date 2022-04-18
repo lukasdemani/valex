@@ -1,5 +1,5 @@
 import connection from "../database";
-import { mapObjectToUpdateQuery } from "../utils/sqlUtils.js";
+import { mapObjectToUpdateQuery } from "../utils/sqlUtils";
 
 export type TransactionTypes =
   | "groceries"
@@ -27,7 +27,7 @@ export type CardUpdateData = Partial<Card>;
 
 export async function findByNumber(number: string) {
   const result = await connection.query<Card>("SELECT * FROM cards WHERE number=$1", [number]);
-  return result.rows;
+  return result.rows[0];
 }
 
 export async function findById(id: number) {
@@ -67,17 +67,19 @@ export async function findByCardDetails(
   return result.rows[0];
 }
 
-export async function insert(
-    employeeId: number,
-    number: number,
-    cardholderName: string,
-    securityCode: string,
-    expirationDate: string,
-    password: string,
-    isVirtual: boolean,
-    originalCardId: number,
-    isBlocked: boolean,
-    type: TransactionTypes){
+export async function insert(cardData: CardInsertData) {
+  const {
+    employeeId,
+    number,
+    cardholderName,
+    securityCode,
+    expirationDate,
+    password,
+    isVirtual,
+    originalCardId,
+    isBlocked,
+    type,
+  } = cardData;
 
   connection.query(
     `
